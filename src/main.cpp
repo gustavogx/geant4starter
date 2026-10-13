@@ -15,22 +15,23 @@
 
 int main(int argc, char** argv)
 {
-    // Create a run manager appropriate for this Geant4 build
-    // (sequential or multi-threaded, depending on how G4 was compiled).
-    auto runManager =
-        std::unique_ptr<G4RunManager>(
-            G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default));
+	// Create a run manager appropriate for this Geant4 build
+	// (sequential or multi-threaded, depending on how G4 was compiled).
+	auto runManager =
+		std::unique_ptr<G4RunManager>(
+			G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default)
+		);
 
-    // --- Mandatory user initializations ----------------------------------
-    runManager->SetUserInitialization(new DefaultGeometry());
-    runManager->SetUserInitialization(new FTFP_BERT());
-    runManager->SetUserInitialization(new ActionInitialization());
+	// Mandatory user initializations 
+	runManager->SetUserInitialization(new DefaultGeometry());
+	runManager->SetUserInitialization(new FTFP_BERT());
+	runManager->SetUserInitialization(new ActionInitialization());
 
-    // Initialize the simulation kernel
-    runManager->Initialize();
+	// Initialize the simulation kernel
+	runManager->Initialize();
 
-    // Transport one geantino
-    runManager->BeamOn(1);
+	// Transport one geantino
+	runManager->BeamOn(1);
 
-    return 0;
+	return 0;
 }

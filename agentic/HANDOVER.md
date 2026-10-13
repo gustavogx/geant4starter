@@ -85,3 +85,39 @@ Three suggestions presented to the user, no changes applied:
 1. `DefaultGeometry.cpp` — ownership-transfer comment missing on geometry `new` allocations.
 2. `main.cpp` — same issue for `SetUserInitialization` calls.
 3. `main.cpp` — `argc`/`argv` are unused; no macro file handling present.
+
+---
+
+### Session 4 — Style updates and pre-commit review
+
+**Actions taken:**
+- Added geometry object naming convention to `SPECIFICATIONS.md` (`solid`/`logic`/`phys` prefix pattern, from `DefaultGeometry.cpp` lines 23–25).
+- Added Types rule to `SPECIFICATIONS.md`: use native C++ types, not Geant4 aliases.
+- Added `auto` usage rule to `SPECIFICATIONS.md`.
+- Applied `auto` to `DefaultGeometry.cpp` (`worldLogical`, `worldPhysical` → `auto`).
+- Applied `double` in place of `G4double` in `DefaultGeometry.cpp`.
+- Lowercased binary name to `g4starter` everywhere (CMakeLists, README, SPECIFICATIONS, HANDOVER).
+
+**Notable:** `DefaultGeometry.cpp` was extended by the user between sessions to include a lead-oxide cylindrical target (`G4Tubs`, `G4_LEAD_OXIDE`). Build confirmed clean.
+
+**Findings reported (pre-commit, no changes applied):**
+1. `targetRadius`/`targetLength` use `auto` but deduce to `G4double` — suggest explicit `double`.
+2. `worldHalfSize` — non-const is intentional; value may be driven externally in future.
+3. `DefaultGeometry.hpp` header comment doesn't mention the target volume — suggest updating.
+
+## Current State
+
+| Item | Status |
+|---|---|
+| CMake configuration | Working — general, no hardcoded paths |
+| C++ standard detection | Via `geant4-config --cxxstd` |
+| Binary output | `bin/g4starter` via `set_target_properties` |
+| `.gitignore` | `build/` and `bin/` both covered |
+| README | Current — build, usage, and agentic sections present |
+| Code documentation | Header comments on all classes; `.cpp` file comment slightly stale (see Finding 3) |
+| Style | `auto`, native types, geometry prefix naming all applied |
+
+## Known Gaps / Next Tasks
+
+- `argc`/`argv` in `main()` unused — no macro file handling.
+- Three pre-commit findings above awaiting user decision.

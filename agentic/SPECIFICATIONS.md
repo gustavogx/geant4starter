@@ -32,6 +32,43 @@ Agents working on this project have three responsibilities:
 - Use `std::unique_ptr` for owned Geant4 objects where possible.
 - Comments are in English, concise, and explain intent not mechanics.
 
+### Naming conventions (mirrors Geant4 style)
+
+- **Classes and structs:** PascalCase — e.g. `DetectorConstruction`, `RunAction`
+- **Objects and variables:** camelCase — e.g. `runManager`, `worldVolume`, `nistManager`
+- **Geant4 geometry objects:** prefix + PascalCase noun, where the prefix encodes the geometry role:
+  - `solid`  — solid shape, e.g. `solidWorld`, `solidDetector`
+  - `logic`  — logical volume, e.g. `logicWorld`, `logicDetector`
+  - `phys`   — physical volume, e.g. `physWorld`, `physDetector`
+
+### Indentation
+
+- Use the **tab character** (`\t`) for indentation, never spaces.
+
+### Types
+
+- Use native C++ types instead of Geant4 aliases: `double` not `G4double`, `int` not `G4int`, `bool` not `G4bool`, etc.
+- Geant4 geometry and physics objects (`G4Box`, `G4Material`, etc.) keep their G4 names — this rule applies only to plain scalar types.
+
+### Use of `auto`
+
+- Use `auto` whenever the type is unambiguous from context (e.g. factory calls, `new` expressions, `GetInstance()` patterns).
+- When using `auto` with `new`, prefer dropping the `*`: declare `auto foo = new Foo(...)` rather than `auto* foo = new Foo(...)` unless the pointer nature needs to be emphasised for clarity.
+
+### Physical volume variables and `[[maybe_unused]]`
+
+In Geant4, non-world physical volumes are registered with their mother logical volume at construction time. The returned `G4VPhysicalVolume*` pointer is not used again after placement, which triggers an unused-variable warning.
+
+Always suppress this with `[[maybe_unused]]`:
+
+```cpp
+[[maybe_unused]] auto physTarget = new G4PVPlacement(...);
+```
+
+This is preferred over discarding the pointer entirely, because it keeps the variable named and visible — making the placement explicit and readable — while silencing the compiler warning cleanly.
+
+The world volume is the exception: its pointer is returned from `Construct()` and must not carry `[[maybe_unused]]`.
+
 ### Binary output
 
 The compiled binary `g4starter` must be placed in `bin/` at the project root. Enforce this in `CMakeLists.txt` with:
